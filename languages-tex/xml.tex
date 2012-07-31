@@ -1,0 +1,14 @@
+
+%% le langage XML est peu supporté, donc je défini moi même les couleurs des
+%% mots-clefs, en reprenant un post sur internet
+\lstdefinelanguage{XML}{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type},% list your attributes here
+  % sets the caption-position to bottom
+  captionpos=b
+}

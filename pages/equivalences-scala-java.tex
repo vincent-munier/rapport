@@ -1,0 +1,53 @@
+%% ne pas utiliser l'indentation automatique sinon ça va décaler le code sur la
+%% droite et ça ne tiendra pas sur le pdf
+Équivalences de code Java, Scala :\\
+\noindent
+\small\addtolength{\tabcolsep}{-5pt}
+\begin{tabular}{|c|c|}
+  \hline
+  \textbf{Java} & \textbf{Scala}\\
+  \hline
+  \lstset{language=Java}
+  \begin{lstlisting}
+boolean hasUpperCase = false
+for (int i = 0; i < name.length(); i++)
+  if (Character.isUpperCase(name.charAt(i))) {
+    hasUpperCase = true;
+    break;
+  }
+\end{lstlisting} &   \lstset{language=Scala}
+\begin{lstlisting}
+// Utilisation des collections et closures Scala
+val hasUpperCase = name.exists(_.isUpper)
+\end{lstlisting}
+\\
+\hline
+\lstset{language=Java}
+\begin{lstlisting}
+public class Person {
+  private String name;
+  private int age;
+  public Person(String name, int age) {
+    this.name = name; this.age = age;
+  }
+
+  public String getName() { return name;}
+  public int getAge() { return age; }
+
+  public void setName(String name) { 
+    this.name = name; 
+  }
+  public void setAge(int age) { 
+     this.age = age; 
+  }
+}
+\end{lstlisting} &
+\lstset{language=Scala}
+\begin{lstlisting}
+// Scala créé automatiquement les getters et
+// setters pour 'name' et 'age'
+class Person(var name: String, var age: Int)
+\end{lstlisting}
+\\
+\hline
+\end{tabular}

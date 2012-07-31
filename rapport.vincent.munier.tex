@@ -1,0 +1,186 @@
+\documentclass[20pt, a4paper]{report}   
+%\documentclass[twocolumn]{report}   
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+\usepackage[francais]{babel}
+\usepackage{url} 
+\usepackage{lmodern} 
+\usepackage{geometry}  
+\usepackage{graphicx}
+
+%% Pour pouvoir mettre une image dans la page de garde
+%% Le fichier .sty se trouve dans le dossier extensions-tex/
+\usepackage{titlepic}
+
+\usepackage{fancyhdr}
+\usepackage[absolute]{textpos} 
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{lscape}              % Pour pouvoir passer en paysage
+\usepackage{multicol}            % Pour pouvoir faire plusieurs colonnes
+\usepackage{makeidx}             % Pour crééer un index
+\usepackage{setspace}            % Pour l'interligne de 1.5
+\usepackage{endnotes}            % Pour les notes en fin de doc
+\usepackage{footnote}            % Pour les notes en bas de page
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{multirow} 
+\usepackage{colortbl}
+
+% Pour avoir accès aux fonctions de conversions
+% après import du package layouts on peut par exemple utiliser la commande 
+% \printinunitsof{cm}\prntlen{\textwidth} qui affiche la largeur du texte en cm.
+% exemple d'affichage : textwidth in cm : 15.99773 cm  
+
+\usepackage{layouts}            
+
+\makeindex
+\usepackage{color}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+
+
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  showstringspaces=false,
+  commentstyle=\color{gray}\upshape
+}
+
+\include{languages-tex/xml}
+\include{languages-tex/java}
+\include{languages-tex/scala}
+\include{languages-tex/javascript}
+
+% Pour les marges de la page
+\geometry{a4paper, top=2.5cm, bottom=3.5cm, left=2.5cm, right=2.5cm, marginparwidth=1.2cm}
+
+\parskip=5pt                   % distance entre § (paragraphe)
+\sloppy                        % respecter toujours la marge de droite 
+
+% Pour les pénalités :
+\interfootnotelinepenalty=250  % note de bas de page
+\widowpenalty=150              % veuves et orphelines
+\clubpenalty=150 
+
+% Pour la longueur de l'indentation des paragraphes
+\setlength{\parindent}{15mm}
+
+
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+\hypersetup{
+  urlcolor=cyan           % color of external links
+}
+
+% j'indique à latex où aller chercher les images pour éviter d'avoir à taper le
+% nom du dossier imgs/ à chaque fois que je veux inclure une image
+\graphicspath{{imgs/}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%% MACRO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% macro pour enlever le nom 'chapitre'
+\makeatletter
+\def\@makechapterhead#1{%
+  \vspace*{20\p@}%
+          {\parindent \z@ \raggedright \normalfont
+            \interlinepenalty\@M
+            \ifnum \c@secnumdepth >\m@ne
+            \Huge\bfseries \thechapter\quad
+            \fi
+            \Huge \bfseries #1\par\nobreak
+            \vskip 20\p@
+          }
+}
+
+\def\@makeschapterhead#1{%
+  \vspace*{20\p@}%
+          {\parindent \z@ \raggedright
+            \normalfont
+            \interlinepenalty\@M
+            \Huge \bfseries  #1\par\nobreak
+            \vskip 20\p@
+          }
+}
+\makeatother
+
+% definir l'apparence des numeros des endnotes :
+\renewcommand{\enoteformat}{
+  \rightskip 
+  \leftskip
+  \leavevmode
+  \llap{\theenmark . }
+}
+
+%Pour avoir a la fois les footnotes et endnotes :
+\newcommand{\mafootnote}[2]{
+  \footnote{#2 \label{#1}}
+  \stepcounter{endnote}
+  \endnotetext{#2 (Note \ref{#1}, page \pageref{#1})}
+}
+
+%%%%%%%%%%%%%%%%%%%%%% PAGE DE GARDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Page de garde personnalisée Début
+
+\titlepic{
+  \includegraphics[width=.4\linewidth]{imgs/universite_marne_la_vallee.jpg}
+  \includegraphics[width=.4\linewidth]{imgs/mimesis.png}
+}
+
+\title
+    {   \vspace{-55mm}
+      \normalsize{Université Paris-Est Marne-la-Vallée\\
+        2011-2012}\\
+      \vspace{70mm} 
+      \Huge{\textbf{Rapport de stage en entreprise}}\\
+      \huge{Interface Web pour piloter l'outil de déploiement du jeu en ligne
+        sur le Cloud}\\
+    }
+    \author{\textbf{Vincent Munier} : \textit{vmunier@etudiant.univ-mlv.fr} \\
+      M2 informatique : parcours logiciel\\
+      \vspace{25mm} \\
+      \today
+    }
+    \date{
+      \normalsize{
+        \vspace{40mm}
+        Maître de stage : Damian Arregui\\
+        Responsable de formation : Serge Midonnet\\
+      }
+    }
+
+
+    %%%%%%%%%%%%%%%% RAPPORT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{document}
+
+    \maketitle
+
+
+    \abstract{le résumé ici, mettre le sujet du stage}
+
+    \clearpage
+    \tableofcontents
+    \clearpage
+
+    \begin{onehalfspace}           % Pour avoir un interligne de 1,5
+
+      %% \input{pages/content}
+      \input{pages/entreprise}
+      \input{pages/outils}
+      \input{pages/scrum}
+      \input{pages/contexte}
+      \input{pages/realisations}
+      \input{pages/conclusion}
+      \input{pages/annexes}
+
+    \end{onehalfspace}             % Pour finir l'interligne de 1,5
+
+    \end{document}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
