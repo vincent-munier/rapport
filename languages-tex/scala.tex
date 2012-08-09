@@ -3,7 +3,7 @@
 \definecolor{javapurple}{rgb}{0.5,0,0.35} % keywords
 \definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
 
-\lstdefinelanguage{scala}{
+\lstdefinelanguage{Scala}{
   morekeywords={%
           abstract,case,catch,class,def,do,else,extends,%
           false,final,finally,for,forSome,if,implicit,import,lazy,%
@@ -29,8 +29,9 @@
   %% ensuite écrire la traduction entre double accolades (ex {{à}}) et enfin écrire
   %% le nombre (1) . Entre deux entrées, on peut mettre des espaces pour plus de
   %% clareté.
-  literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ç}{{\c{c}}}1 {œ}{{\oe}}1 {ù}{{\`u}}1
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\'a}}1 {ç}{{\c{c}}}1 {œ}{{\oe}}1 {ù}{{\`u}}1
   {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1 {Œ}{{\OE}}1 {Ê}{{\^E}}1
-  {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1 {dollar}{{\$}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1 {dollarSign}{{\$}}1
+  {percentageSign}{{\%}}1
 }[keywords,comments,strings]
 

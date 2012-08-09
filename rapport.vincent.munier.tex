@@ -128,7 +128,7 @@
 % Page de garde personnalisée Début
 
 \titlepic{
-  \includegraphics[width=.4\linewidth]{imgs/universite_marne_la_vallee.jpg}
+  \includegraphics[width=.4\linewidth]{imgs/universite-marne-la-vallee.jpg}
   \includegraphics[width=.4\linewidth]{imgs/mimesis.png}
 }
 
@@ -160,8 +160,8 @@
 
     \maketitle
 
-
-    \abstract{le résumé ici, mettre le sujet du stage}
+    \renewcommand{\abstractname}{Sujet de stage}
+    \abstract{mettre le sujet du stage}
 
     \clearpage
     \tableofcontents
@@ -169,12 +169,12 @@
 
     \begin{onehalfspace}           % Pour avoir un interligne de 1,5
 
-      %% \input{pages/content}
       \input{pages/entreprise}
       \input{pages/outils}
       \input{pages/scrum}
       \input{pages/contexte}
       \input{pages/realisations}
+      \input{pages/bilan}
       \input{pages/conclusion}
       \input{pages/annexes}
 

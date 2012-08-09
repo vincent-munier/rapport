@@ -1,0 +1,81 @@
+\begin{verbatim}
+Usage: infra <cmd> [<infra>] [<file>] [<key>=<value>]*
+
+    Infra admin tool config file:
+      Config parameters must be specified in the 'infra.conf' file located in the 'config' directory.
+      It should contain one <field>=<value> definition per line.
+
+    Infra creation, pass config file:
+      create <file>
+        Create an infrastructure as defined in the given config file.
+     migrate <file>
+        Migrate databases for a particular environment in an infrastructure as
+        defined in the given config file.
+
+
+    Infra management, pass infra:
+      start <infra>
+        Start the given infrastructure.
+      stop <infra>
+        Stop the given infrastructure.
+      status <infra>
+        Show status of the given infrastructure.
+      destroy <infra>
+        Destroy the given infrastructure.
+
+    Service management, pass infra:
+      start-services <infra>
+        Start services on the given infrastructure.
+      stop-services <infra>
+        Stop services on the given infrastructure.
+      restart-services <infra>
+        Restart services on the given infrastructure.
+      status-services <infra>
+        Show status of the services on the given infrastructure.
+
+    Database management, pass infra:
+      deploy-db <infra>
+        Run the 'deployDb' command on the given infrastructure.
+      liquibase-install <infra>
+        Run the 'liquibase-install' command on the given infrastructure.
+      liquibase-sync <infra>
+        Run the 'liquibase-sync' command on the given infrastructure.
+      liquibase-update <infra>
+        Run the 'liquibase-update' command on the given infrastructure.
+      run-migration-tool <infra>
+        Run the 'run-migration-tool' command on the given infrastructure.
+
+    Text management, pass infra :
+      deploy-wti <infra>
+        Export the last texts from WTI on amazon S3 ; to really use them you
+        have to modify the file "launch.js.php" on the "a" environment.
+
+
+    Environment management, pass infra and optionally updated values:
+      show <infra> [<key>]*
+        Show the "a" environment on the given infrastructure.
+      update-env <infra> <file>
+        Update the "a" environment on the given infrastructure as defined in the given config file.
+      update-env <infra> [<key=value>]*
+        Update the "a" environment on the given infrastructure as defined in the key-value arguments.
+
+    Various utilities, rarely used:
+      list
+        List all infrastructures.
+      start-all
+        Start all infrastructures and all services.
+      stop-all
+        Stop all infrastructures.
+      register-dns <infra>
+        Register DNS records for the given infrastructure.
+      switch-dns <infra>
+        Switch LIVE dns to point to the given infrastructure.
+      export <infra>
+        Export the databag item describing the given infrastructure from the Chef server to a file.
+      import <infra>
+        Import the databag item describing the given infrastructure from a file to the Chef server.
+      export-databags
+        Export all databags from the Chef Server to the file system.
+      import-databags
+        Import all databags from the file system to the Chef Server.
+\end{verbatim}

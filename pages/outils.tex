@@ -8,9 +8,6 @@ probablement pas le risque de s'engager avec des nouveaux outils.\\
 Ceux-ci demandent effectivement un effort d'apprentissage et d'adaptation au
 début mais une fois maîtrisés, le gain de productivité est réel.\\
 
-%% Le panel de technologies utilisées 
-%% Scala, Play!, jQuery, CoffeeScript, SBT, Mercurial, AWS, Chef.
-
 Je décris ci dessous chacun de ces outils,
 classés par temps d'utilisation dans le travail que j'ai effectué.
 Les outils que j'ai le plus utilisés sont présentés en premier et sont décrits
@@ -50,7 +47,8 @@ Son nom vient de l'anglais Scalable language qui signifie  ``langage évolutif''
   dans une bibliothèque.\\
   Quelques lignes suffisent pour partitionner une liste \textit{people} en deux
   autres (\textit{minors} et \textit{adults}), en fonction de leur age :
-\begin{verbatim}
+\lstset{language=Scala}
+\begin{lstlisting}
     class Person(val name:String, val age:Int)
     val people = List(
     new Person("Hervé", 22),
@@ -58,7 +56,8 @@ Son nom vient de l'anglais Scalable language qui signifie  ``langage évolutif''
     new Person("Greg", 18))
 
     val (minors, adults) = people partition (_.age < 18)
-\end{verbatim}
+\end{lstlisting}
+
 Ce morceau de code demanderait plusieurs boucles imbriquées en Java.\\
 Ici, List est juste une classe et partition une méthode.\\
 Ces fonctionnalités étant toutes implémentées dans des bibliothèques,
@@ -92,10 +91,13 @@ faciles d'utilisation, concises et extensibles.\\
   statiquement typés ont tendance à être plus rapides que les langages
   dynamiquement typés) et facilite le refactoring de code car de nombreuses
   erreurs sont signalées par le compilateur lorsque un changement est effectué.\\
-
+\item[\textbullet]\textbf{Inférence de types :}\\
   Les types ne doivent pas être nécessairement indiqués car ils peuvent être
   inférés automatiquement par le compilateur dans la majorité des cas.\\
-  L'indication des types reste obligatoire pour les paramètres de méthodes.\\
+  Le code source est plus aéré et le développeur n'a pas à se soucier de retenir les
+  noms de types.
+  L'indication des types reste toutefois obligatoire pour les paramètres de
+  méthodes.\\
 \item[\textbullet]\textbf{Autorise la Surcharge d'opérateurs :}\\
   Tout opérateur est une fonction. Une surcharge d'opérateur n'est rien d'autre
   qu'une surcharge de méthode en Scala.\\
@@ -153,10 +155,6 @@ La complémentarité des paradigmes fonctionnel et orienté objet :\\\\
   afin d'avoir les meilleurs performances possibles tout en gardant un langage
   extensible pouvant faire face à l'évolution croissante de leurs demandes.\\
 
-  %% Parmi les sociétés qui utilisent Scala, nous pouvons citer :\\
-  %% EDFT, Novell, the Guardian, Xebia, Xerox, Sony, Siemens, Thatcham,
-  %% OPower, GridGain, AppJet, Reaktor, LinkedIn.\\
-
   Néanmoins, Scala reste pour l'instant un langage de niche avec une estimation
   de 0.237\% d'utilisation pour le mois de juillet 2012 calculée par le site
   \href{http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html}{tiobe.com}.\\
@@ -185,6 +183,9 @@ have never created Groovy.''\\
 Play! est un framework MVC inspiré de Rails qui permet de créer facilement des
 applications web avec Java et Scala.
 
+%% Play est basé sur une architecture légère et stateless avec une consommation de
+%% ressources (CPU, mémoire, threads) minimale pour les applications évolutives.
+
 \subsection{Full stack}
 Play! embarque un serveur web, il se suffit à lui-même. Cette notion
 est appelée “full-stack”. Elle signifie que Play! est autonome 
@@ -206,7 +207,7 @@ CoffeeScript et LESS.
   JavaScript. Il y a une relation 1-1 entre du code JavaScript et du code
   CoffeeScript.
 \item LESS est un petit langage lui aussi mais qui compile vers du CSS.
-  Grace à LESS, il est possible de rajouter des variables, des opérations
+  Grâce à LESS, il est possible de rajouter des variables, des opérations
   (comme additionner des couleurs ensemble) et faire de l'héritage dans nos
   fichiers de styles.
 \end{itemize}
@@ -232,10 +233,10 @@ Après envoie de la réponse, le client est oublié.
 Dans une architecture stateful, l'historique d'activité du client sur le site
 web va être gardé coté serveur (il est allé sur tel page, puis il a cliqué tel
 bouton) alors que dans une architecture stateless, cette information n'est pas
-gardé.
+gardée.
 
 Une architecture stateless permet d'avoir de meilleurs performances et une
-faible consommation mémoire. Play! offre de bonne performance car les requêtes
+faible consommation mémoire. Play! offre de bonnes performances car les requêtes
 peuvent être traîtées : 
 \begin{itemize}
 \item dans le désordre
@@ -249,7 +250,9 @@ et Play! consomme peu de mémoire car :
 
 \subsection{Rechargement à chaud et affichage des erreurs dans le navigateur}
 
-\includegraphics[scale=0.40]{play-erreur.png}  
+\begin{figure}[H]
+  \includegraphics[scale=0.40]{play-erreur.png}  
+\end{figure}
 
 Le cycle de développement est rapide, edition $\rightarrow$ test $\rightarrow$ correction.
 Avec Play! il y a un seul endroit où consulter le résultat de son
@@ -270,7 +273,7 @@ produire à plein d'endroits différents :
 \bigskip
 
 Le cycle de développement est plus simple avec Play!.
-On édite le code dans son éditeur de texte, on sauvegarde et enfin on raffraichi
+On édite le code dans son éditeur de texte, on sauvegarde et enfin on rafraîchit
 la page dans son navigateur et c'est dans son navigateur qu'on vérifie si il n'y
 a pas d'erreur. \\
 Bien sur, nous pouvons aussi utiliser notre IDE favori et avoir le
@@ -304,10 +307,13 @@ alors se connecter sur chaque serveur pour modifier le fichier
 fichiers critiques, pour s'assurer qu'un programme est lancé sur tels
 serveurs.\\
 
-Chef répond à ces problèmes qui ont occupé et occupent toujours des bataillons
-d'administrateurs système. Avec sa DSL (Domain-Specific Language) ruby, Chef
-réalise une abstraction d'opérations de base comme la manipulation des IPs, de la
-configuration DNS ou NTP, etc. \\
+Pour répondre à ces problèmes qui ont occupé et occupent toujours des bataillons
+d'administrateurs système, il existe trois acteurs majoritaires sur le marché
+qui sont : Puppet, Chef et Cfengine. Chef est le plus jeune des trois. 
+
+Avec sa DSL (Domain-Specific Language) ruby, Chef réalise une abstraction
+d'opérations de base comme la manipulation des IPs, de la configuration DNS ou
+NTP, etc. \\
 Un de ses points forts est que la même fonction Chef permet de manipuler des
 choses décrites différemment selon le système : une IP ne s'affecte pas de la
 même façon sous Linux que Solaris ou Windows.\\
@@ -328,6 +334,9 @@ se charge de maintenir dans le temps la cohérence de cette infrastructure.
 %% Par exemple FindBugs et JavaRebel sont tout aussi fonctionnel avec Scala.
 
 \section{Jira}
+
+%% Les "workflow" de Jira
+%% https://confluence.atlassian.com/display/JIRA/Configuring+Workflow
 
 C'est un logiciel de gestion de projet qui se présente sous forme de page web
 accessible depuis internet.
@@ -360,4 +369,29 @@ avait pris le temps de choisir les bonnes phrases dans une demande écrite.\\
 Quant au développeur, avoir une demande écrite lui permet de l'analyser
 ultérieurement.
 
+
+\subsection{Le workflow de Jira}
+
+Un workflow Jira est un ensemble d'étapes (ou d'états) et de transitions qu'une
+issue traverse durant son cycle de vie. Les workflows Jira sont consistitués
+d'étapes et de transitions.
+
+\begin{wrapfigure}[13]{r}{11cm}
+  \includegraphics[width=0.6\textwidth]{jira-workflow.png}
+\end{wrapfigure}
+
+Une \textbf{étape} représente l'état courant du workflow pour une issue.
+Chaque étape du workflow est liée à un état. 
+Lorsqu'une issue est déplacée dans une étape particulière, son champ
+\textit{status} est mis à jour et prend la valeur de l'état lié à l'étape.
+Dans le diagramme ci-contre, les boîtes bleus représentent les étapes/états.
+
+Une \textbf{transition} est un lien entre deux étapes. Une transition permet
+à une issue de se déplacer d'une étape à une autre. Pour qu'une issue puisse
+progresser depuis une étape particulière à une autre, une transition qui les
+lie doit exister entre ces deux étapes.
+Il faut noter qu'une transition est un lien unidirectionnel, donc si une
+issue a besoin de faire des aller-retours entre deux étapes, deux
+transitions doivent être créées.
+Dans le diagramme ci-contre, les flèches représentent les transitions.
 
