@@ -86,13 +86,11 @@ Les instances de type micro sont aussi les moins chers de tous les types
 d'instances proposés par Amazon. Leurs prix est de seulement 2 centimes de
 dollars par heure.
 
-\underline{\textit{Bilan}} : découverte et première utilisation d'AWS. Ce
+\underline{\textit{Bilan}} : Découverte et première utilisation d'AWS. Ce
 service de Cloud Computing fourni par Amazon est l'investissement le plus
 rentable pour les jeunes entreprises. De plus en plus d'entreprises l'utilisent
-car il est économique, fiable et évolutif.
-
-Avoir les droits d'accès pour piloter AWS est une opportunité pour moi
-d'apprendre à maîtriser cet outil.
+car il est économique, fiable et évolutif. Avoir les droits d'accès pour piloter
+AWS est une opportunité pour moi d'apprendre à maîtriser cet outil.
 
 \subsection{Scripts Bash}
 
@@ -188,18 +186,209 @@ de la webapp :
 \underline{\textit{Bilan}} :
 \begin{itemize}
 \item Le développement est rapide avec Play!. Le rechargement à
-chaud de l'application et l'utilisation du langage évolué Scala permettent de
-gagner beaucoup de temps.  
+  chaud de l'application et l'utilisation du langage évolué Scala permettent de
+  gagner beaucoup de temps.  
 \item Les interactions coté client se font en JavaScript et
-je gagne en aisance à programmer avec ce langage que je connais à peine.
+  je gagne en aisance à programmer avec ce langage que je connais à peine.
 \item  Découverte des WebSocket, cette technologie de dialogue client/serveur
   bidirectionnelle ouvre de belles perspectives à de nouvelles fonctionnalités
   Web.
 \end{itemize}
 
-\section{Composants de la webapp}
+\section{Transformer l'outil d'infra en bibliothèque}
 
-\subsection{Champs de saisie}
+\underline{\textit{La demande}} : Transformer l'outil d'infra en bibliothèque pour ne plus
+lancer un processus séparé et donc une JVM à chaque exécution de commande.
+Mais, très important, l'outil doit toujours fonctionner en ligne de
+commande.
+
+\underline{\textit{L'objectif}} : Générer un jar de l'outil d'infra pour ensuite
+l'intégrer à l'application web. Les méthodes de l'outil d'infra seront
+directement accessibles dans le code source de la webapp.
+
+La transformation de l'outil d'infra en API impose plusieurs changements qui
+sont présentés dans les sous-sections qui suivent.
+
+\subsection{Des singletons transformés en simples classes}
+
+Toutes les classes étaient des services. Elles étaient toutes des singletons.
+Les services proposent des méthodes utilitaires et n'ont pas d'état. Il était
+donc logique d'avoir des singletons car nous n'avions pas besoin de plus d'une
+instance par service. 
+
+De même, il existait un singleton Logger qui était utilisé par tous les autres
+singletons afin de logguer leurs différentes actions.
+
+Dans l'outil d'infra en ligne de commande, un seul logger suffisait, un simple
+logger qui enregistre tout dans un fichier.
+Mais pour que l'outil se transforme en API, l'utilisateur doit avoir le
+contrôle sur le logger. L'utilisateur doit pouvoir choisir son logger, il doit
+pouvoir en utiliser plusieurs si il souhaite.
+
+C'était en effet le cas de l'application web qui allait être le premier
+programme à utiliser l'API. L'application web a besoin de plusieurs
+loggers. En fait, elle a besoin d'un logger par internaute.
+Une nouvelle instance du Logger est créée pour chaque nouvel internaute afin
+que les résultats des commandes lancées par un internaute soient isolés dans son
+propre fichier. Les logs des internautes ne doivent pas être mélangés.
+
+Un refactoring important a permis la transformation de l'outil d'infra en API.
+Tous les singletons sont transformés en simples classes.
+Puisqu'il n'existe plus de singleton, les constructeurs de ces classes prennent
+alors en paramètre les instances d'autres classes dont elles dépendent.
+
+Par chance, l'outil d'infra a été développé avec un langage statiquement
+typé, Scala en l’occurrence.
+Lorsqu'un singleton se transforme en simple classe, le code extérieur qui
+utilisait ce singleton doit changer sa façon de l'appeler.
+Grâce au typage statique, Eclipse affichait les erreurs de compilation dans
+les différents fichiers faisant usage de la classe modifiée. Il suffisait alors
+de suivre ces erreurs et de les corriger.
+
+\underline{\textit{Bilan}} : Cette tâche fut assez longue à faire mais il n'y
+avait pas de complexité particulière, le résultat était assuré.
+En plus de l'objectif premier qui était de pouvoir utiliser l'outil d'infra en
+tant qu'API, les dépendances entre les classes sont maintenant clairement
+exposées ce qui facilite la compréhension du code.
+
+\subsection{Libération mémoire du cache}
+
+L'outil faisait aussi utilisation d'un cache pour l'optimisation de méthodes
+appelées plusieurs fois durant l'exécution d'une même commande.
+
+Puisque ce programme était conçu pour exécuter une seule commande, la
+consommation mémoire de ce cache ne posait pas problème.
+À la fin de l'exécution de la commande, le programme se termine et la JVM
+se charge de libérer la mémoire allouée.
+
+Dans le cadre d'une API, le problème est différent. Le client qui utilise l'API
+de l'outil d'infra ne souhaite peut-être pas exécuter une seule commande.
+Si le client exécute plusieurs commandes successives, le cache grossit pour
+chaque nouvelle commande exécutée et consomme de plus en plus de mémoire.
+
+C'est le cas de l'application web dont la durée d'exécution est \textit{supposée}
+infinie. Une fois mise en production, l'application web doit être
+continuellement disponible pour les utilisateurs. Seul le déploiement d'une
+nouvelle version de l'application web doit engendrer son redémarrage.
+
+Pour corriger ce problème, les données relatives à une commande sont supprimées
+du cache lorsque l'exécution de cette commande se termine.
+
+\underline{\textit{Bilan}} : Ce problème de cache non libéré n'a été détecté
+qu'une fois l'application web mise en ligne. Après quelques jours
+d'utilisation, une exception java.lang.OutOfMemoryError avait été lancée par la
+JVM du serveur. Ce problème ne s'est pas reproduit une fois la solution mise en
+place. L'option -XX:+HeapDumpOnOutOfMemoryError a aussi été rajouté au lancement
+de la JVM pour récupérer à l'avenir une description complète de l'état du tas
+(heap) de la mémoire si une même exception se produisait.
+
+\subsection{Des types de retour plus riches}
+
+Plusieurs méthodes de haut niveau, directement appelées par le main de l'outil
+d'infra, ne renvoyaient rien car le seul retour utile était imprimé
+sur stdout et stderr. Ces méthodes de haut niveau font maintenant parti de l'API
+de l'outil d'infra et peuvent être appelées en dehors du main par n'importe
+quelle autre méthode.
+Les types de retour des méthodes de l'API ont donc été enrichis.
+
+Par exemple, la commande 'list' affiche sur la sortie standard la liste de
+toutes les infrastructures existantes.
+Son type de retour était Unit (void en Java) et devient Seq[Infra] (en Java, le
+type le plus proche serait List<Infra>).
+Le client de l'API peut alors se servir de la liste des infrastructures retournée.
+
+\underline{\textit{Bilan}} : L'application web utilise le jar de l'outil d'infra
+pour accèder à ses méthodes. Il n'est plus nécessaire de lancer un processus
+séparé pour exécuter une commande.
+
+\section{Les pages de la nouvelle webapp}
+L'application web possède trois pages :
+la page \textit{Commands}, la page \textit{Infras} et la page \textit{History}.
+
+\subsection{La page Commands}
+
+C'est la page principale du site. C'est aussi la plus utilisée car c'est à
+travers cette page qu'il est possible d'exécuter n'importe-quelle commande de
+l'outil d'infra. 
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{commands.png}  
+\end{figure}
+
+\subsection{La page Infras}
+
+La page Infras est un tableau de bord des infrastructures existantes.
+
+Les informations exposées sont sont celles de l'outil d'infra. Tous les
+attributs ne sont pas exposés à l'utilisateur. Si l'utilisateur souhaite
+consulter l'ensemble des attributs d'une infrastructure, il peut le faire en se
+connectant sur Chef car c'est Chef qui stocke toutes les informations relatives
+à une infrastructure.
+
+Le chargement des attributs pour l'ensemble des infrastructures existantes met
+environ 5 secondes à s'exécuter sur l'instance EC2 qui héberge la webapp.
+Un icône animé de chargement indique à l'utilisateur de patienter.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{infras-dashboard-loading.png}  
+  \caption{Chargement des infrastructures}
+\end{figure}
+
+Une fois les informations des infrastructures chargées, tous les noms d'infra
+sont affichés sous forme de tableau.
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{infras-dashboard.png}  
+  \caption{les noms d'infrastructure présentés dans un tableau}
+\end{figure}
+
+L'utilisateur peut cliquer sur l'infrastructure qui l'intéresse.
+Un deuxième tableau se présente à l'utilisateur dans lequel il peut consulter
+les versions des différents services de l'infrastructure sélectionnée.
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{infra-versions.png}  
+  \caption{les versions des services de l'infrastructure qaengine}
+\end{figure}
+
+Les nœuds appartenant à l'infra sélectionnée sont aussi accessibles via un
+onglet \textit{Nodes}. 
+Ce tableau nous affiche des informations intéressantes pour chaque nœud telles
+que l'ID de l'AMI (Amazon Machine Image), le type d'instance EC2 qui héberge le
+nœud, le hostname que l'on peut utiliser si on souhaite se connecter en ssh sur
+l'instance du nœud, et enfin la liste des Security Groups.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{infra-nodes.png}  
+  \caption{les nœuds de l'infrastructure qaengine}
+\end{figure}
+
+L'utilisateur peut cliquer sur le nœud qui l'intéresse.
+Un troisième et dernier tableau se présente à l'utilisateur dans lequel il peut
+consulter les rôles Chef appliqués au nœud sélectionné.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{node-roles.png}  
+  \caption{Les rôles du nœud qaengine\_game2\_0}
+\end{figure}
+
+\subsection{La page History}
+
+La page History affiche l'historique des commandes exécutées.
+Les 100 dernières commandes sont présentées dans un tableau dans l'ordre
+chronologique inverse de leur date d'exécution, en commençant par l'exécution de
+la commande la plus récente.
+
+Cette page affiche deux informations supplémentaires qui sont le nombre de
+pages \textit{commands} actuellement ouvertes (lorsqu'on déploie une nouvelle
+version, on prévient par mail le nouveau déploiement et on vérifie que le nombre
+de pages \textit{commands} ouvertes vaut 0) et le nombre de commandes
+actuellement en cours d'exécution.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{history.png}  
+  \caption{Historique des 100 dernières commandes exécutées}
+\end{figure}
+
+\section{Composants de la page commands}
 
 La webapp propose 30 commandes réparties dans 7 catégories différentes.
 Voici un tableau récapitulatif de ces commandes.\\\\
@@ -230,6 +419,8 @@ Voici un tableau récapitulatif de ces commandes.\\\\
 \end{tabular}
 
 
+\subsection{Champs de saisie}
+
 %% \begin{figure}[H]
 %%   \begin{center}
 %%     \includegraphics[scale=0.5]{categories.png} 
@@ -240,7 +431,7 @@ Voici un tableau récapitulatif de ces commandes.\\\\
 Lorsque l'utilisateur clique sur l'une des commandes d'une catégorie, il voit
 apparaître en haut de l'application plusieurs champs de saisie qui décrivent les
 arguments que doit recevoir la commande.
-Il y a un champ de saisi pour un argument.
+Il y a un champ de saisi pour chaque argument.
 La commande \textit{restart-services} prend le nom d'une infra en
 arguments. Elle possède donc un champ ``infra...''.
 La commande \textit{update-env-file} prend le nom d'une infra et le chemin du
@@ -320,7 +511,7 @@ doivent être importés dans le bon ordre de la façon suivante :
 
 Heureusement, il existe quand même des moyens de définir de telles hiérarchies de
 dépendances en JavaScript. RequireJS est une bibliothèque qui rend possible la
-définition de dépendances entre modules de manière approprié pour le navigateur.
+définition de dépendances entre modules de manière appropriée pour le navigateur.
 RequireJS est une sorte de \#include/import/require pour JavaScript.\\
 Voici un extrait de code de l'application utilisant RequireJS :
 \lstset{language=JavaScript}
@@ -472,193 +663,6 @@ Certaines commandes n'ont pas de verrou car elles n'ont pas d'effet de bord.
 Par exemple les commandes status, status-services et show n'ont pas besoin
 de verrou car elles ne font que récupérer des informations concernant une infra.
 
-\section{Transformer l'outil d'infra en bibliothèque}
-
-\underline{\textit{La demande}} : Transformer l'outil d'infra en bibliothèque pour ne plus
-lancer un processus séparé et donc une JVM à chaque exécution de commande.
-Mais, très important, l'outil doit toujours fonctionner en ligne de
-commande.
-
-\underline{\textit{L'objectif}} : Générer un jar de l'outil d'infra pour ensuite
-l'intégrer à l'application web. Les méthodes de l'outil d'infra seront
-directement accessibles dans le code source de la webapp.
-
-La transformation de l'outil d'infra en API impose plusieurs changements.
-
-\subsection{Des singletons transformés en simples classes}
-
-Toutes les classes étaient des services. Elles étaient toutes des singletons.
-Les services proposent des méthodes utilitaires et n'ont pas d'état. Il était
-donc logique d'avoir des singletons car nous n'avions pas besoin de plus d'une
-instance par service. 
-
-De même, il existait un singleton Logger qui était utilisé par tous les autres
-singletons afin de logguer leurs différentes actions.
-
-Dans l'outil d'infra en ligne de commande, un seul logger suffisait, un simple
-logger qui enregistre tout dans un fichier.
-Mais pour que l'outil se transforme en API, l'utilisateur doit avoir le
-contrôle sur le logger. L'utilisateur doit pouvoir choisir son logger, il doit
-pouvoir en utiliser plusieurs si il souhaite.
-
-C'était en effet le cas de l'application web qui allait être le premier
-programme à utiliser l'API. L'application web a besoin de plusieurs
-loggers. Elle a en fait besoin d'un logger par internaute.
-Une nouvelle instance du Logger est créée pour chaque nouvel internaute afin
-que les résultats des commandes lancées par un internaute soient isolés dans son
-propre fichier. Les logs des internautes ne doivent pas être mélangés.
-
-Un refactoring important a permis la transformation de l'outil d'infra en API.
-Tous les singletons sont transformés en simples classes.
-Puisqu'il n'existe plus de singleton, les constructeurs de ces classes prennent
-alors en paramètre les instances d'autres classes dont elles dépendent.
-
-Par chance, l'outil d'infra a été développé avec un langage statiquement
-typé, Scala en l’occurrence.
-Lorsqu'un singleton se transforme en simple classe, le code extérieur qui
-utilisait ce singleton doit changer sa façon de l'appeler.
-Grâce au typage statique, Eclipse affichait les erreurs de compilation dans
-les différents fichiers faisant usage de la classe modifiée. Il suffisait alors
-de suivre ces erreurs et de les corriger.
-
-\underline{\textit{Bilan}} : Cette tâche fut assez longue à faire mais il n'y
-avait pas de complexité particulière, le résultat était assuré.
-En plus de l'objectif premier qui était de pouvoir utiliser l'outil d'infra en
-tant qu'API, les dépendances entre les classes sont maintenant clairement
-exposées ce qui facilite la compréhension du code.
-
-\subsection{Libération mémoire du cache}
-
-L'outil faisait aussi utilisation d'un cache pour l'optimisation de méthodes
-appelées plusieurs fois durant l'exécution d'une même commande.
-
-Puisque ce programme était conçu pour exécuter une seule commande, la
-consommation mémoire de ce cache ne posait pas problème.
-À la fin de l'exécution de la commande, le programme se termine et la JVM
-se charge de libérer la mémoire allouée.
-
-Dans le cadre d'une API, le problème est différent. Le client qui utilise l'API
-de l'outil d'infra ne souhaite peut-être pas exécuter une seule commande.
-Si le client exécute plusieurs commandes successives, le cache grossit pour
-chaque nouvelle commande exécutée et consomme de plus en plus de mémoire.
-
-C'est le cas de l'application web dont la durée d'exécution est \textit{supposée}
-infinie. Une fois mise en production, l'application web doit être
-continuellement disponible pour les utilisateurs. Seul le déploiement d'une
-nouvelle version de l'application web doit engendrer son redémarrage.
-
-Pour corriger ce problème, les données relatives à une commande sont supprimées
-du cache lorsque l'exécution de cette commande se termine.
-
-\underline{\textit{Bilan}} : Ce problème de cache non libéré n'a été détecté
-qu'une fois l'application web mise en ligne. Après quelques jours
-d'utilisation, une exception java.lang.OutOfMemoryError avait été lancée par la
-JVM du serveur. Ce problème ne s'est pas reproduit une fois la solution mise en
-place. L'option -XX:+HeapDumpOnOutOfMemoryError a aussi été rajouté au lancement
-de la JVM pour récupérer à l'avenir une description complète de l'état du tas
-(heap) de la mémoire si une même exception se produisait.
-
-\subsection{Des types de retour plus riches}
-
-Plusieurs méthodes de haut niveau, directement appelées par le main de l'outil
-d'infra, ne renvoyaient rien car le seul retour utile était imprimé
-sur stdout et stderr. Ces méthodes de haut niveau font maintenant parti de l'API
-de l'outil d'infra et peuvent être appelées en dehors du main par n'importe
-quelle autre méthode.
-Les types de retour des méthodes de l'API ont donc été enrichis.
-
-Par exemple, la commande 'list' affiche sur la sortie standard la liste de
-toutes les infrastructures existantes.
-Son type de retour était Unit (void en Java) et devient Seq[Infra] (en Java, le
-type le plus proche serait List<Infra>).
-Le client de l'API peut alors se servir de la liste des infrastructures retournée.
-
-\section{Les pages de la webapp}
-L'application web possède trois pages :
-la page \textit{Commands}, la page \textit{Infras} et la page \textit{History}.
-
-\subsection{La page Commands}
-
-C'est la page principale du site. C'est aussi la plus utilisée car c'est à
-travers cette page qu'il est possible d'exécuter n'importe-quelle commande de
-l'outil d'infra. 
-
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{commands.png}  
-\end{figure}
-
-\subsection{La page Infras}
-
-La page Infras est un tableau de bord des infrastructures existantes.
-
-Les informations exposées sont sont celles de l'outil d'infra. Tous les
-attributs ne sont pas exposés à l'utilisateur. Si l'utilisateur souhaite
-consulter l'ensemble des attributs d'une infrastructure, il peut le faire en se
-connectant sur Chef car c'est Chef qui stocke toutes les informations relatives
-à une infrastructure.
-
-Le chargement des attributs pour l'ensemble des infrastructures existantes met
-environ 5 secondes à s'exécuter sur l'instance EC2 qui héberge la webapp.
-Un icône animé de chargement indique à l'utilisateur de patienter.
-
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{infras-dashboard-loading.png}  
-  \caption{Chargement des infrastructures}
-\end{figure}
-
-Une fois les informations des infrastructures chargées, tous les noms d'infra
-sont affichés sous forme de tableau.
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{infras-dashboard.png}  
-  \caption{les noms d'infrastructure présentés dans un tableau}
-\end{figure}
-
-L'utilisateur peut cliquer sur l'infrastructure qui l'intéresse.
-Un deuxième tableau se présente à l'utilisateur dans lequel il peut consulter
-les versions des différents services de l'infrastructure sélectionnée.
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{infra-versions.png}  
-  \caption{les versions des services de l'infrastructure qaengine}
-\end{figure}
-
-Les nœuds appartenant à l'infra sélectionnée sont aussi accessibles via un
-onglet \textit{Nodes}. 
-Ce tableau nous affiche des informations intéressantes pour chaque nœud telles
-que l'ID de l'AMI (Amazon Machine Image), le type d'instance EC2 qui héberge le
-nœud, le hostname que l'on peut utiliser si on souhaite se connecter en ssh sur
-l'instance du nœud, et enfin la liste des Security Groups.
-
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{infra-nodes.png}  
-  \caption{les nœuds de l'infrastructure qaengine}
-\end{figure}
-
-L'utilisateur peut cliquer sur le nœud qui l'intéresse.
-Un troisième et dernier tableau se présente à l'utilisateur dans lequel il peut
-consulter les rôles Chef appliqués au nœud sélectionné.
-
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{node-roles.png}  
-  \caption{Les rôles du nœud qaengine\_game2\_0}
-\end{figure}
-
-\subsection{La page History}
-
-La page History affiche l'historique des commandes exécutées.
-Les 100 dernières commandes sont présentées dans un tableau dans l'ordre
-chronologique inverse de leur date d'exécution, en commençant par l'exécution de
-la commande la plus récente.
-
-Cette page affiche deux informations supplémentaires qui sont le nombre de
-pages \textit{commands} ouvertes actuellement (lorsqu'on déploie une nouvelle version,
-on prévient par mail le nouveau déploiement et on vérifie que le nombre de pages
-\textit{commands} ouvertes vaut 0) et le nombre de commandes actuellement en cours
-d'exécution.
-
-\begin{figure}[H]
-  \includegraphics[width=\textwidth]{history.png}  
-  \caption{Historique des 100 dernières commandes exécutées}
-\end{figure}
 
 \section{Fonctionalités de la webapp}
 
@@ -718,9 +722,8 @@ dynamiquement à l'interface et n'altèrent pas la navigation de l'utilisateur.
 modèle asynchrone offert par les \textit{WebSocket}. Cette fonctionnalité met
 bien en évidence l'intérêt des \textit{WebSocket} pour créer des pages web qui
 se mette à jour dynamiquement en recevant des informations calculées en
-asynchrone. Les pages web peuvent devenir de vrai application temps réel.
+asynchrone. Les pages web peuvent devenir de vraies applications temps réel.
 
-%% Défilement automatique des logs de la commande en cours d'exécution : OK
 \subsection{Défilement automatique des logs de la commande en cours d'exécution}
 
 \begin{figure}[H]
@@ -737,6 +740,9 @@ Si l'utilisateur déplace la barre de défilement, le défilement automatique se
 désactive.
 Si l'utilisateur replace manuellement la barre de défilement tout en bas,
 le défilement automatique est de nouveau actif.
+
+\underline{\textit{Bilan}} : Aucun plugin n'est utilisé ici. Quelques lignes de
+JavaScript suffisent pour créer ce système de défilement automatique.
 
 %% \subsection{couleurs des logs}
 \subsection{Contrôler les niveaux de log}
@@ -841,9 +847,16 @@ C'est aussi l'étape qui prend le plus de temps à s'exécuter lors d'une créat
 d'infrastructure.
 
 Une session ssh est ouverte avec la lib Java jsch sur l'instance EC2 qui va
-exécuter le chef-client. On ouvre un channel de type ``exec'' sur lequel on
-défini notre logger et la commande à exécuter ``chef-client''.
+exécuter le chef-client. On ouvre un channel de type \textit{exec} sur lequel on
+défini notre logger et la commande à exécuter (i.e. \textit{chef-client}).
 
+\underline{\textit{Bilan}} : Un point négatif est que les logs du
+\textit{chef-client} sont assez volumineux. Le client de l'outil d'infra 
+peut donc être submergé par toutes ces informations. À trop voir de détails, on
+finit par les ignorer. Mais tout de même, lorsqu'une erreur se produit,
+l'utilisateur dispose maintenant de toutes les informations d'exécution puisque
+tous les logs de n'importe-quel programme externe appelé par l'outil d'infra
+sont affichés.
 
 %% - afficher les logs du chef-client dans la sortie web lors d'une création
 %% d'infra.
@@ -857,14 +870,13 @@ associé à un groupe de sécurité RDS et cette limite éteinte.
 \underline{\textit{L'objectif}} : Créer un nouveau groupe de sécurité RDS pour chaque
 \textit{create} d'une nouvelle infra. 
 
-La priorité est haute car la création d'une nouvelle infrastructure ne fonctionne plus.
-
-Le patch est rapidement créé et une nouvelle version de l'outil d'infra est
-publié pour que tout le monde puisse de nouveau créer une infrastructure avec
-l'outil.
+La priorité est haute car la création d'une nouvelle infrastructure ne
+fonctionne plus. Le patch est rapidement créé et une nouvelle version de l'outil
+d'infra est publiée pour que tout le monde puisse de nouveau créer une
+infrastructure avec l'outil.
 
 \underline{\textit{Bilan}} : L'ajout du code pour ce patch dans le temps imparti
-montre que je maitrise à présent le code de l'outil d'infra.
+montre que je maîtrise à présent le code de l'outil d'infra.
 
 %% - J'ai écris le code qui créé un nouveau db security group rds à chaque fois
 %% qu'une nouvelle infra est créée.
@@ -874,17 +886,21 @@ montre que je maitrise à présent le code de l'outil d'infra.
 
 \subsubsection{Des vérifications supplémentaires au début de l'exécution}
 
-Des vérifications supplémentaires ont été rajoutées au début de l'exécution de
-la commande \textit{create} pour éviter qu'elle n'échoue plus tard dans
-l'exécution.
+\underline{\textit{L'objectif}} : Rajouter des vérifications au début de
+l'exécution de la commande \textit{create} pour éviter qu'elle n'échoue plus
+tard dans l'exécution.
 
-À présent, l'outil d'infra interdit la création d'une infrastructure sur une
-instance Amazon de type \textit{t1.micro} car ces instances n'ont pas assez de
-mémoire pour héberger une infra MambaNation.
+\begin{itemize}
+\item[\textbullet] Les instances de type \textit{t1.micro} n'ont pas assez de
+  mémoire pour héberger une infra MambaNation.
+  À présent, l'outil d'infra peut détecter et interdire la création d'une
+  infrastructure sur ce type d'instance Amazon dès le début de l'exécution de la
+  commande \textit{create}.
+\item[\textbullet] Une autre vérification empêche la création d'infrastructure
+  dont le nom contient une majuscule car les noms avec majuscules ne sont pas
+  autorisés pour les Bucket S3.
+\end{itemize}
 
-Une autre vérification empêche la création d'infrastructure dont le nom contient
-une majuscule car les noms avec majuscules ne sont pas autorisés pour les Bucket
-S3.
 
 \underline{\textit{Bilan}} :  Il ne sert à rien d'exécuter une création d'une
 infrastructure si il est possible de détecter à l'avance qu'elle va échouer.  
@@ -912,7 +928,7 @@ nouveaux DNS assignés.
 
 Les enregistrements de ces noms de domaine sont indépendants les uns des autres.
 Cette commande a donc été modifié pour que \underline{chaque enregistrement DNS
- s'exécute en parallèle des autres}.
+  s'exécute en parallèle des autres}.
 
 \subsubsection{La manière d'utiliser cette méthode ne change pas}
 
@@ -960,7 +976,7 @@ français pour détailler ce qu'elle fait.
       getNodeWithRole("mongodb_server").headOption.map { 
         node =>
         val newBrmStructure = dbServersList("brm").updated("host", node.privateIp)
-                                                  .updated("server_id", node.nodeName)
+        .updated("server_id", node.nodeName)
 
         val newDbServersList = dbServersList.updated("brm", newBrmStructure)
         structure = structure.updated("db_servers_list", newDbServersList)
@@ -1049,7 +1065,7 @@ autres), pour créer un zip de l'application courante qui respecte la
 structure imposée, il suffit de :
 \begin{itemize}
 \item ouvrir un terminal
-\item invoquer SBT 
+\item invoquer l'interpréteur de commandes \textit{sbt}
 \item taper la commande \verb?playad-bundle-generate(for standalone)? \\
 \end{itemize}
 
@@ -1062,3 +1078,17 @@ aussi pour l'application web \textit{infra-admin-web}.
 Une fois l'archive dézippée, le dossier \textit{infra-admin-web} contient bien
 les dossiers conf, app et scripts avec le script service.sh pour piloter le
 serveur web de l'application.
+
+\underline{\textit{Bilan}} : Le modèle de déploiement uniforme est une très
+bonne idée. Le démarrage ou l'arrêt d'une application quelconque peut alors être
+ automatisé par un outil externe. 
+À présent, pour tout projet Play! à venir, il suffira d'utiliser le plugin
+\textit{PlayadPlayPlugin} pour pouvoir accèder à la commande qui package
+l'application.
+Ça n'a pas été simple de coder ce plugin \textit{PlayadPlayPlugin} car SBT nous
+force à configurer des composants immuables au travers de Monads. C'est un style
+de programmation très proche des langages fonctionnels et très éloigné des
+langages impératifs auxquels j'étais habitués. Malgré son nom (Simple Build
+Tool), SBT n'est pas n'est pas si simple après tout.
+
+
