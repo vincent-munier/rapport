@@ -1,3 +1,4 @@
+%% dernière relecture : 13 août
 
 \chapter{Le contexte}
  %% : l'outil de déploiement du jeu en ligne
@@ -15,8 +16,8 @@ L'applet est responsable du rendu 3D du jeu.
 
 La Nation regroupe un ensemble de composants applicatifs qui donnent vie au
 monde de la Nation: moteur du Jeu, base de données, etc.. Des Web services sont
-aussi utilisés pour permettre aux partenaires externes d'accèder à la Nation. 
-Le service ``Event log'' est un composant qui collecte les événements
+aussi utilisés pour permettre aux partenaires externes d’accéder à la Nation.
+Les services ``Event log'' sont un élément central qui collecte les événements
 utilisateurs.
 
 La couche Admin est composée de la BI (Business Intelligence Platform) qui
@@ -28,14 +29,14 @@ Back-Office pour que le jeu puisse être géré par les équipes Operation.
 Le diagramme représente les principaux services fonctionnels de Mamba Nation.
 Ces services peuvent être organisés en trois couches :
 \begin{itemize}
-\item couche User: services accesibles directement par l'utilisateur final
+\item couche User: services accessibles directement par l'utilisateur final
 \item couche Game: moteur du jeu, les services pour les partenaires externes et les
   composants internes
 \item couche Admin: reporting et outils de gestion
 \end{itemize}
 
 \begin{figure}[H]
-  \includegraphics[scale=0.75]{MN-functional-diagram.png}  
+  \includegraphics[scale=0.75]{MN-functional-diagram.png} 
   \caption{Diagramme fonctionnel de la Nation}
 \end{figure}
 
@@ -49,12 +50,12 @@ La Nation utilise aussi un ensemble de services techniques :
 \begin{itemize}
 \item Zookeeper : service centralisé pour maintenir les informations de configuration
 \item Route 53 : service Web de système de noms de domaine (DNS)
-\item Mongo DB: base de données orientée document
+\item Mongo DB : base de données orientée document
 \item RabbitMQ : solution de messagerie orientée messages pour créer un réseau
   d'échange d'informations entre des applications.
-\item RDS: base de données MySql fournie par Amazon
-\item Jetty: moteur de servlet basé sur Java
-\item Apache: héberge le site php
+\item RDS : base de données MySql fournie par Amazon
+\item Jetty : moteur de servlet basé sur Java
+\item Apache : héberge le site php
 \item S3 : plateforme de stockage ``illimité''
 \end{itemize}
 
@@ -68,7 +69,7 @@ Le site web est développé en PHP avec un serveur Zend et un cache APC. Il est
 déployé sur Apache.
 
 \begin{figure}[H]
-  \includegraphics[scale=0.75]{MN-technical-diagram.png}  
+  \includegraphics[scale=0.75]{MN-technical-diagram.png} 
   \caption{Diagramme technique de la Nation}
 \end{figure}
 
@@ -93,22 +94,25 @@ Un développeur de l'équipe \textit{engine} peut exécuter la commande
 ligne de commande affiche :
 \begin{verbatim}
     engine_all_0 (i-51e60a18 / 54.247.21.95)        :       running
-    Instance reachability check passed 
+    Instance reachability check passed
     System reachability check passed
 \end{verbatim}
 Tout va bien, l'instance \verb?engine_all_0? est bien en train de s'exécuter.
 
+L'objectif principal du stage est de créer une interface Web pour piloter cet
+outil d'infra de déploiement du jeu en ligne sur le Cloud.
+
 \section{Le concept de Promises}
 
-L'outil d'infra utilise le concept de Promises partout dans son code.
+L'outil d'infra utilise le concept de \textit{Promises} partout dans son code.
 
-Les \textit{Promises} fournissent un bon moyen de raisonner sur l'exécution de
+Les Promises fournissent un bon moyen de raisonner sur l'exécution de
 nombreuses opérations en parallèle - d'une façon efficace et non bloquante.
 
-L'idée est simple, une Promise est une sorte de conteneur d'objet que l'on peut
-créer pour un résultat qui n'existe pas encore.
+L'idée est simple, une Promise est une sorte de conteneur d'objet que
+l'on peut créer pour un résultat qui n'existe pas encore.
 
-Généralement, le résultat d'une \textit{Promise} est calculé de manière
+Généralement, le résultat d'une Promise est calculé de manière
 concurrente et peut être récupéré plus tard.
 Composer des tâches concurrentes de cette manière permet d'avoir du code
 parallèle non bloquant, asynchrone plus rapide.
@@ -120,19 +124,20 @@ le cas où le calcul a échoué.
 Une propriété importante d'une Promise est qu'elle est immuable; le détenteur de
 la Promise ne peut à aucun moment modifier la valeur qu'elle contient.
 
-Voici un exemple de création d'une Promise qui appelle une méthode asynchrone
-getUsers. Le résultat devient disponible une fois que la Promise se termine.
+Voici un exemple de création d'une Promise qui appelle une méthode getUsers de
+façon asynchrone. Le résultat devient disponible une fois que la Promise se
+termine.
 \lstset{language=scala,
   frame=single                   % adds a frame around the code
 }
 \begin{lstlisting}
-  val usersProm: Promise[List[Users]] = Promise {
+  val usersProm: Promise[List[Users]] = async {
     session.getUsers
   }
 \end{lstlisting}
 
 Nous pouvons chaîner les calculs sur la Promise de base en utilisant la méthode
-map qui reçoit une fonction en paramètre. 
+map qui reçoit une fonction en paramètre.
 \begin{lstlisting}
   val alexProm: Promise[User] = usersProm.map { users => users.filter(_.name == ``Alex'').head }
 \end{lstlisting}
@@ -148,7 +153,7 @@ val alex:User = alexProm waitAndGetEither() match {
 \end{lstlisting}
 Si la Promise s'est terminée avec succès alors la méthode waitAndGetEither
 renvoie une instance Right qui contient notre utilisateur Alex.
-Si l'une des fonction passée aux différentes Promises de la chaîne a échouée, la
+Si l'une des fonctions passée aux différentes Promises de la chaîne a échouée, la
 méthode waitAndGetEither renvoie une instance Left qui contient l'exception
 lancée.
 
@@ -171,8 +176,8 @@ Lors de la création d'une infra, l'outil en ligne de commande stocke entre
 autres le nom de l'infra, la région AWS, le nom de la base de données et le nom
 du groupe de sécurité dans un Databag Chef.
 
-L'outil d'infra utilise l'API REST de Chef pour récupèrer des informations ou
-effectuer des actions. 
+L'outil d'infra utilise l'API REST de Chef pour récupérer des informations ou
+effectuer des actions.
 
 \section{Usage}
 
@@ -181,3 +186,4 @@ et ses arguments. Si la commande n'existe pas, l'outil d'infra affiche l'aide
 d'usage.
 Voici l'affichage de l'aide, on peut y voir toutes les commandes disponibles :
 \input{pages/usage}
+

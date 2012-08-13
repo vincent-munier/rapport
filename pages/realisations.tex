@@ -629,16 +629,17 @@ l'application.
     ce nœud car l'authentification a échoué}
 \end{figure}
 
-\underline{\textit{Bilan}} : Ce message apporte de la clarté à l'utilisateur.
-Il n'est pas obligé de scruter le défilement des logs pour savoir si la commande
-est toujours en cours d'exécution. Avec ce message d'alerte qui s'affiche
-dynamiquement, il voit tout de suite lorsque la commande s'est terminée, si elle
-a réussi ou échoué.
+\underline{\textit{Bilan}} : Ce message est mis en avant en haut de page,
+l'utilisateur ne peut pas le manquer.
+Il n'est plus nécessaire de scruter le défilement des logs pour savoir si la
+commande est toujours en cours d'exécution. Avec ce message d'alerte qui
+s'affiche dynamiquement, on voit tout de suite lorsque la commande s'est
+terminée, si elle a réussi ou échoué.
 
 \section{Verrous sur les commandes à effet de bord}
 
-\underline{\textit{La demande}} : interdire l'exécution de deux commandes identiques en même temps si
-celles-ci ont des effets de bord.
+\underline{\textit{La demande}} : interdire l'exécution de deux commandes
+identiques en même temps si celles-ci ont des effets de bord.
 
 L'application web coté serveur enregistre les commandes en cours d'exécution.
 À chaque nouvelle exécution d'une commande, l'application verrouille toute autre
@@ -663,6 +664,10 @@ Certaines commandes n'ont pas de verrou car elles n'ont pas d'effet de bord.
 Par exemple les commandes status, status-services et show n'ont pas besoin
 de verrou car elles ne font que récupérer des informations concernant une infra.
 
+\underline{\textit{Bilan}} : Le verrouillage d'une commande à risque n'est
+assuré que si toutes les opérations se font via l'interface web. C'est la webapp
+coté serveur qui fait le contrôle. L'outil d'infra en ligne de commande, lui ne
+verrouille aucune commande.
 
 \section{Fonctionalités de la webapp}
 
