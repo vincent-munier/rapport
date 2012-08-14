@@ -35,10 +35,12 @@ Ces services peuvent être organisés en trois couches :
 \item couche Admin: reporting et outils de gestion
 \end{itemize}
 
+\begin{center}
 \begin{figure}[H]
   \includegraphics[scale=0.75]{MN-functional-diagram.png} 
   \caption{Diagramme fonctionnel de la Nation}
 \end{figure}
+\end{center}
 
 \subsection{Architecture Technique}
 
@@ -156,6 +158,9 @@ renvoie une instance Right qui contient notre utilisateur Alex.
 Si l'une des fonctions passée aux différentes Promises de la chaîne a échouée, la
 méthode waitAndGetEither renvoie une instance Left qui contient l'exception
 lancée.
+
+Les promises feront parties de la bibliothèque standard de Scala 2.10
+(\url{http://www.scala-lang.org/node/12550}).
 
 \section{L'outil d'infra et AWS}
 

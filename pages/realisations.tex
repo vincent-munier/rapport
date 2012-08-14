@@ -24,7 +24,7 @@ l'interface web de l'outil d'infra pour décider de remplacer le code php
 existant.
 
 \underline{\textit{Bilan}} : Cette présentation m'a permis de travailler
-l'aisance oral devant un public de techniciens. J'ai pu confronter mes arguments
+l'aisance orale devant un public de techniciens. J'ai pu confronter mes arguments
 en faveur (ou défaveur) du framework Play! avec ceux d'autres programmeurs
 expérimentés qui ont déjà utilisé plusieurs frameworks Web.
 
@@ -82,7 +82,7 @@ tournant sur une instance de type \textit{t1.micro} :
   \caption{utilisation CPU pour une instance de type micro}
 \end{figure}
 
-Les instances de type micro sont aussi les moins chers de tous les types
+Les instances de type micro sont aussi les moins chères de tous les types
 d'instances proposés par Amazon. Leurs prix est de seulement 2 centimes de
 dollars par heure.
 
@@ -97,7 +97,7 @@ AWS est une opportunité pour moi d'apprendre à maîtriser cet outil.
 Maintenant que nous disposons d'une instance EC2 réservée pour l'application
 web, il faut automatiser les actions récurrentes qui devront être effectuées.
 
-Quatre scripts Bash sont créés pour exécuter les taches récurrentes :
+Quatre scripts Bash sont créés pour exécuter les tâches récurrentes :
 deploy.sh, start.sh, stop.sh et restart.sh pour respectivement déployer
 l'application web, la démarrer, l'arrêter et la redémarrer.
 
@@ -119,19 +119,19 @@ déploiement.
 \item La webapp doit permettre d'exécuter deux commandes en parallèle.
 \end{enumerate}
 
-Le code coté serveur est écrit en Scala.
+Le code côté serveur est écrit en Scala.
 Puisque toute classe Java peut être naturellement instanciée dans du code Scala,
 c'est la classe Java ProcessBuilder qui est utilisée pour exécuter
 l'outil d'infra comme programme externe.
-Qu'en au code coté client, il doit afficher la sortie de la commande dans le
+Qu'en au code côté client, il doit afficher la sortie de la commande dans le
 navigateur.
 
 Une contrainte apparaît :
 Certaines commandes de l'outil d'infra prennent beaucoup de temps à s'exécuter.
 L'output de la commande doit donc être affichée au fur et à mesure de son
 exécution. Pour ce faire :\\
-\textit{Coté serveur}, un BufferedReader récupère dynamiquement la sortie de la commande.\\
-\textit{Coté client}, du JavaScript affiche progressivement le résultat.
+\textit{Côté serveur}, un BufferedReader récupère dynamiquement la sortie de la commande.\\
+\textit{Côté client}, du JavaScript affiche progressivement le résultat.
 
 Le point restant est la communication entre le serveur et le navigateur du
 client pour afficher dynamiquement du contenu dans la page web.
@@ -174,7 +174,7 @@ résultat de la commande et l'afficher dans le navigateur.
 
 Pour chaque nouvelle page ouverte, une WebSocket est créée.
 Deux utilisateurs peuvent alors exécuter leur commande en parallèle sans
-bloquage ni intercalage des logs des commandes.
+blocage ni intercalage des logs des commandes.
 
 Voici une capture d'écran de l'interface web disponible avec la première version
 de la webapp :
@@ -188,7 +188,7 @@ de la webapp :
 \item Le développement est rapide avec Play!. Le rechargement à
   chaud de l'application et l'utilisation du langage évolué Scala permettent de
   gagner beaucoup de temps.  
-\item Les interactions coté client se font en JavaScript et
+\item Les interactions côté client se font en JavaScript et
   je gagne en aisance à programmer avec ce langage que je connais à peine.
 \item  Découverte des WebSocket, cette technologie de dialogue client/serveur
   bidirectionnelle ouvre de belles perspectives à de nouvelles fonctionnalités
@@ -376,6 +376,12 @@ La page History affiche l'historique des commandes exécutées.
 Les 100 dernières commandes sont présentées dans un tableau dans l'ordre
 chronologique inverse de leur date d'exécution, en commençant par l'exécution de
 la commande la plus récente.
+Ces 100 commandes ne sont pas persistées en base de données. Elles sont stockées
+dans une file. Lorsqu'une 101 ème commande est ajoutée à la file, la première
+est supprimée afin de ne conserver que les 100 dernières commandes. Cet élément
+supprimé de la file sera récupéré par le garbage collector.
+À l'avenir, il est prévu de rajouter la notion d'utilisateur avec un système
+d'authentification, afin d'avoir un audit complet.
 
 Cette page affiche deux informations supplémentaires qui sont le nombre de
 pages \textit{commands} actuellement ouvertes (lorsqu'on déploie une nouvelle
@@ -431,7 +437,7 @@ Voici un tableau récapitulatif de ces commandes.\\\\
 Lorsque l'utilisateur clique sur l'une des commandes d'une catégorie, il voit
 apparaître en haut de l'application plusieurs champs de saisie qui décrivent les
 arguments que doit recevoir la commande.
-Il y a un champ de saisi pour chaque argument.
+Il y a un champ de saisie pour chaque argument.
 La commande \textit{restart-services} prend le nom d'une infra en
 arguments. Elle possède donc un champ ``infra...''.
 La commande \textit{update-env-file} prend le nom d'une infra et le chemin du
@@ -458,8 +464,8 @@ Un sélecteur de fichier est ajouté pour les commandes \textit{create},
 \textit{migrate} et \textit{update-env-file} de l'outil d'infra.
 
 Lorsque l'utilisateur clique sur le bouton 'Execute', le fichier sélectionné est
-uploadé vers le serveur et la commande elle-même est exécutée coté serveur avec
-le fichier qui vient d'être téléchargé.
+uploadé vers le serveur et la commande elle-même est exécutée côté serveur 
+en utilisant le fichier qui vient d'être téléchargé.
 Du code Ajax est utilisé pour ne pas avoir besoin de recharger la page lors de
 l'envoie du fichier.
 Ainsi le client peut recevoir l'output de la commande dans la page web.
@@ -579,14 +585,14 @@ dans la mise en cache) est de regrouper tous les fichiers dans un seul sans
 modifier le code. De cette manière, le nombre de requêtes requises pour
 récupérer les ressources du serveur est réduit à une seule.
 
-RequireJS fourni un outil pour automatiquement minifier et
+RequireJS fournit un outil pour automatiquement minifier et
 regrouper tous les modules en un seul. Cet outil est capable de minifier chaque
 fichier CSS du projet et minifier et regrouper tous les fichiers JavaScript dont
 les dépendances ont été définies en tant que module RequireJS.
 
 \underline{\textit{Bilan}} : L'utilisation de \textit{RequireJS} était devenu
 indispensable sans quoi la gestion des dépendances serait devenue un vrai
-labyrinthe. Il est tout de même dommage de na pas disposer de système de package
+labyrinthe. Il est tout de même dommage de ne pas disposer de système de package
 en JavaScript et de devoir faire recours à des bibliothèques tierces.
 
 %% Peut-être ne pas mettre de section CoffeeScript ça fera trop de technologies
@@ -597,7 +603,7 @@ Pour éviter de retomber dans les nombreux pièges rencontrés au cours du
 développement de la partie cliente en JavaScript, j'ai décidé d'utiliser
 CoffeeScript à la place de JavaScript.
 
-CoffeeScript est un langage influencé par ruby qui fourni, entre autres choses,
+CoffeeScript est un langage influencé par ruby qui fournit, entre autres choses,
 les compréhensions de listes, une meilleure gestion des variables sans polluer
 le namespace et plein d'autres outils qui rendent le développement JavaScript
 plus simple. CoffeeScript compile vers du JavaScript lisible et bien formaté,
@@ -612,7 +618,7 @@ plaisante et plus concise.
 \section{Messages Done et Failed}
 
 Lorsqu'une commande se termine, l'utilisateur reçoit un message \textbf{Done} si la
-commande a réussi ou un message \textbf{Failed!} si la commande a échouée.
+commande a réussi ou un message \textbf{Failed!} si la commande a échoué.
 
 \begin{figure}[H]
   \includegraphics[width=\textwidth]{cmdDone.png}
@@ -641,13 +647,13 @@ terminée, si elle a réussi ou échoué.
 \underline{\textit{La demande}} : interdire l'exécution de deux commandes
 identiques en même temps si celles-ci ont des effets de bord.
 
-L'application web coté serveur enregistre les commandes en cours d'exécution.
+L'application web côté serveur enregistre les commandes en cours d'exécution.
 À chaque nouvelle exécution d'une commande, l'application verrouille toute autre
 exécution de la même commande. Lorsque la commande est terminée, qu'elle ait
-réussie ou qu'elle ait échouée, l'application enlève le verrou.
+réussi ou qu'elle ait échoué, l'application enlève le verrou.
 
 Pour cela, l'application maintient un HashSet des commandes en cours d'exécution
-qui sont verrouillés. L'ajout ou la suppression du verrou se traduit par un
+qui sont verrouillées. L'ajout ou la suppression du verrou se traduit par un
 ajout ou une suppression du nom de la commande dans le HashSet.
 
 Si un utilisateur exécute une commande qui est déjà en cours d'exécution
@@ -666,14 +672,14 @@ de verrou car elles ne font que récupérer des informations concernant une infr
 
 \underline{\textit{Bilan}} : Le verrouillage d'une commande à risque n'est
 assuré que si toutes les opérations se font via l'interface web. C'est la webapp
-coté serveur qui fait le contrôle. L'outil d'infra en ligne de commande, lui ne
+côté serveur qui fait le contrôle. L'outil d'infra en ligne de commande, lui ne
 verrouille aucune commande.
 
-\section{Fonctionalités de la webapp}
+\section{Fonctionnalités de la webapp}
 
 \subsection{Complétion automatique des infras}
 
-L'application web fournie une complétion automatique des noms d'infrastructures
+L'application web fournit une complétion automatique des noms d'infrastructures
 pour les champs qui requièrent une infra.
 
 \begin{figure}[H]
@@ -701,14 +707,14 @@ la liste.
 \end{lstlisting}
 
 Comme présenté dans le code html ci-dessus, la liste est vide au début.
-Elle contiendra la liste des infras disponibles qui sera générée coté serveur.
+Elle contiendra la liste des infras disponibles qui sera générée côté serveur.
 
 Lorsque l'utilisateur se connecte à l'application, la page web lui est envoyée
 instantanément. Il peut exécuter la commande qu'il souhaite mais ne
 dispose pas encore de la complétion automatique des infrastructures.
 
 Une WebSocket est utilisée pour remplir dynamiquement cette liste.
-En asynchrone, la commande \textit{list} est exécutée coté serveur.
+En asynchrone, la commande \textit{list} est exécutée côté serveur.
 Cette commande récupère la liste de toutes les infrastructures disponibles en
 requêtant Chef qui dispose de cette information. La commande \textit{list} met
 environ 5 secondes à s'exécuter sur l'instance EC2 qui héberge l'application
@@ -726,7 +732,7 @@ dynamiquement à l'interface et n'altèrent pas la navigation de l'utilisateur.
 \underline{\textit{Bilan}} : Cette autocomplétion tire pleinement parti du
 modèle asynchrone offert par les \textit{WebSocket}. Cette fonctionnalité met
 bien en évidence l'intérêt des \textit{WebSocket} pour créer des pages web qui
-se mette à jour dynamiquement en recevant des informations calculées en
+se mettent à jour dynamiquement en recevant des informations calculées en
 asynchrone. Les pages web peuvent devenir de vraies applications temps réel.
 
 \subsection{Défilement automatique des logs de la commande en cours d'exécution}
@@ -853,14 +859,14 @@ d'infrastructure.
 
 Une session ssh est ouverte avec la lib Java jsch sur l'instance EC2 qui va
 exécuter le chef-client. On ouvre un channel de type \textit{exec} sur lequel on
-défini notre logger et la commande à exécuter (i.e. \textit{chef-client}).
+définit notre logger et la commande à exécuter (i.e. \textit{chef-client}).
 
 \underline{\textit{Bilan}} : Un point négatif est que les logs du
 \textit{chef-client} sont assez volumineux. Le client de l'outil d'infra 
 peut donc être submergé par toutes ces informations. À trop voir de détails, on
 finit par les ignorer. Mais tout de même, lorsqu'une erreur se produit,
 l'utilisateur dispose maintenant de toutes les informations d'exécution puisque
-tous les logs de n'importe-quel programme externe appelé par l'outil d'infra
+tous les logs de n'importe quel programme externe appelé par l'outil d'infra
 sont affichés.
 
 %% - afficher les logs du chef-client dans la sortie web lors d'une création
@@ -908,7 +914,7 @@ tard dans l'exécution.
 
 
 \underline{\textit{Bilan}} :  Il ne sert à rien d'exécuter une création d'une
-infrastructure si il est possible de détecter à l'avance qu'elle va échouer.  
+infrastructure s' il est possible de détecter à l'avance qu'elle va échouer.  
 Ces vérifications permettent de détecter une erreur plus tôt et d'afficher des
 messages d'erreurs court et explicites.
 
@@ -925,7 +931,7 @@ messages d'erreurs court et explicites.
 \subsection{Optimisations en temps d'exécution}
 
 La commande \textit{registerDns} enregistre un nouveau nom DNS sur AWS Route53
-pour chaque nœud de l'infrastructure précisée en entré de la
+pour chaque nœud de l'infrastructure précisée en entrée de la
 commande. \textit{registerDns} met ensuite à jour Chef pour indiquer les
 nouveaux DNS assignés.
 
@@ -1014,7 +1020,7 @@ partie.
 Lorsqu'une commande échoue, les logs affichés à l'utilisateur de l'outil d'infra
 (en ligne de commande ou web) décrivent son déroulement pas à pas. Mais parfois
 les logs ne suffisent pas et sans une bonne connaissance de l'ensemble des
-étapes exécutées par ces lourdes commandes, il est très dure de découvrir la
+étapes exécutées par ces lourdes commandes, il est très dur de découvrir la
 cause de l'échec.
 
 \underline{\textit{La demande :}} documenter le déroulement des commandes \textit{create},
@@ -1025,7 +1031,7 @@ de Mimesis. Cette page de documentation permet de savoir si l'enregistrement des
 DNS s'effectue avant ou après l'initialisation de la base de données RDS ou
 encore de savoir à quel moment la liste des services est ajoutée dans Chef par
 exemple.
-L'utilisateur a ainsi une vision plus clair du déroulement de l'exécution de
+L'utilisateur a ainsi une vision plus claire du déroulement de l'exécution de
 l'outil d'infra.
 Un administrateur système peut se servir de cette documentation pour repérer
 l'opération qui a échoué et la réparer manuellement.
@@ -1065,7 +1071,7 @@ Son utilisation est simple :
 
 Les équipes de la société ont créé plusieurs plugins SBT pour automatiser le
 packaging de tout type d'application utilisée.
-Ainsi, dans n'importe-quel sous-projet de la société (projet PHP, Rails ou
+Ainsi, dans n'importe quel sous-projet de la société (projet PHP, Rails ou
 autres), pour créer un zip de l'application courante qui respecte la
 structure imposée, il suffit de :
 \begin{itemize}
@@ -1093,7 +1099,7 @@ l'application.
 Ça n'a pas été simple de coder ce plugin \textit{PlayadPlayPlugin} car SBT nous
 force à configurer des composants immuables au travers de Monads. C'est un style
 de programmation très proche des langages fonctionnels et très éloigné des
-langages impératifs auxquels j'étais habitués. Malgré son nom (Simple Build
+langages impératifs auxquels j'étais habitué. Malgré son nom (Simple Build
 Tool), SBT n'est pas n'est pas si simple après tout.
 
 
