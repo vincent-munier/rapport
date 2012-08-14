@@ -153,8 +153,8 @@ La première solution bien connue pour disposer de ce comportement asynchrone es
 \textit{Ajax} est une technologie permettant de créer des applications qui simulent un
 comportement temps réel. Le navigateur envoi une requête HTTP à intervalle
 régulier et reçoit une réponse.
-Il existe aujourd'hui des alternavives à \textit{Ajax} pour voir des données se mettre à
-jour dans sa page web sans appuyer sur le bouton refresh.
+Il existe aujourd'hui des alternatives à \textit{Ajax} pour voir des données se
+mettre à jour dans sa page web sans appuyer sur le bouton refresh.
 
 La webapp de l'outil d'infra utilise des \textit{WebSocket}.
 C'est une autre technologie web, bien plus récente, qui permet de créer de vrais
@@ -298,7 +298,7 @@ type le plus proche serait List<Infra>).
 Le client de l'API peut alors se servir de la liste des infrastructures retournée.
 
 \underline{\textit{Bilan}} : L'application web utilise le jar de l'outil d'infra
-pour accèder à ses méthodes. Il n'est plus nécessaire de lancer un processus
+pour accéder à ses méthodes. Il n'est plus nécessaire de lancer un processus
 séparé pour exécuter une commande.
 
 \section{Les pages de la nouvelle webapp}
@@ -448,7 +448,7 @@ un champ ``infra...'' et un sélecteur de fichier.
 \underline{\textit{Bilan}} : Ce nombre conséquent de commandes implique d'avoir
 une grosse quantité de code HTML pour disposer tous les champs sur la
 page web. Play! propose un système de templating qui permet de créer des
-fonctions qui générent du code HTML depuis le serveur et permet d'éviter la
+fonctions qui génèrent du code HTML depuis le serveur et permet d'éviter la
 duplication de code. Le code ainsi créé est plus compact, plus facile à
 comprendre et à maintenir.
 
@@ -600,7 +600,7 @@ CoffeeScript à la place de JavaScript.
 CoffeeScript est un langage influencé par ruby qui fourni, entre autres choses,
 les compréhensions de listes, une meilleure gestion des variables sans polluer
 le namespace et plein d'autres outils qui rendent le développement JavaScript
-plus simple. CoffeeScript compile vers du JavaScript lisible et bien formatté,
+plus simple. CoffeeScript compile vers du JavaScript lisible et bien formaté,
 ce qui facilite le débugage.
 Tout le code JavaScript écrit jusqu'ici est traduit en CoffeeScript.
 Le code est plus concis (gain de $\sim$15\% pour le nombre de lignes de code) et le
@@ -788,7 +788,7 @@ pas correctement terminée comme ça peut aussi venir de la limite du nombre de
 groupes de sécurité fixée par Amazon qui est atteinte.
 
 Mais la cause la plus fréquente est l'échec de l'exécution du chef-client.
-À chaque fois que ce programme plante, un adminastreur système doit récupérer le
+À chaque fois que ce programme plante, un administrateur système doit récupérer le
 fichier de logs Chef pour connaître la cause. Il recherche alors sur amazon
 l'url de l'instance EC2 qui héberge l'infrastructure car c'est cette instance
 qui exécute chef-client et qui possède les logs Chef. Une fois cette url
@@ -845,7 +845,7 @@ sur chaque instance EC2 de l'infra.
 
 \underline{\textit{L'objectif}} : Récupérer les logs de la commande chef-client
 en cours d'exécution sur l'instance EC2 distante pour pouvoir les afficher à
-l'utilsateur.
+l'utilisateur.
 
 Le programme \textit{chef-client} initialise toutes les données Chef.
 C'est aussi l'étape qui prend le plus de temps à s'exécuter lors d'une création
@@ -885,7 +885,7 @@ montre que je maîtrise à présent le code de l'outil d'infra.
 
 %% - J'ai écris le code qui créé un nouveau db security group rds à chaque fois
 %% qu'une nouvelle infra est créée.
-%% Ça permetra d'éviter la limite qu'on atteint rapidement lorsqu'on utilise le
+%% Ça permettra d'éviter la limite qu'on atteint rapidement lorsqu'on utilise le
 %% security group 'default'.
 
 
@@ -925,7 +925,7 @@ messages d'erreurs court et explicites.
 \subsection{Optimisations en temps d'exécution}
 
 La commande \textit{registerDns} enregistre un nouveau nom DNS sur AWS Route53
-pour chaque noeud de l'infrastructure précisée en entré de la
+pour chaque nœud de l'infrastructure précisée en entré de la
 commande. \textit{registerDns} met ensuite à jour Chef pour indiquer les
 nouveaux DNS assignés.
 
@@ -1001,7 +1001,7 @@ français pour détailler ce qu'elle fait.
 \underline{\textit{Bilan}} : La méthode registerDns est exécutée par plusieurs commandes
 dont \textit{create}, \textit{start}, \textit{restart-services} et
 \textit{registerDns}. L'optimisation de cette méthode permet par exemple de
-gagner environ 10 secondes lors de la création d'une infra avec quatre noeuds.
+gagner environ 10 secondes lors de la création d'une infra avec quatre nœuds.
 
 \subsection{Documentation dans le wiki}
 
@@ -1020,7 +1020,7 @@ cause de l'échec.
 \underline{\textit{La demande :}} documenter le déroulement des commandes \textit{create},
 \textit{destroy}, \textit{start} et \textit{stop}.
 
-Toutes les étapes de ces quatres commandes ont donc été documentées dans le wiki
+Toutes les étapes de ces quatre commandes ont donc été documentées dans le wiki
 de Mimesis. Cette page de documentation permet de savoir si l'enregistrement des
 DNS s'effectue avant ou après l'initialisation de la base de données RDS ou
 encore de savoir à quel moment la liste des services est ajoutée dans Chef par
@@ -1088,7 +1088,7 @@ serveur web de l'application.
 bonne idée. Le démarrage ou l'arrêt d'une application quelconque peut alors être
  automatisé par un outil externe. 
 À présent, pour tout projet Play! à venir, il suffira d'utiliser le plugin
-\textit{PlayadPlayPlugin} pour pouvoir accèder à la commande qui package
+\textit{PlayadPlayPlugin} pour pouvoir accéder à la commande qui package
 l'application.
 Ça n'a pas été simple de coder ce plugin \textit{PlayadPlayPlugin} car SBT nous
 force à configurer des composants immuables au travers de Monads. C'est un style

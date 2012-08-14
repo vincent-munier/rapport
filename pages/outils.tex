@@ -17,10 +17,11 @@ de façon plus complète, avec leurs avantages et inconvénients.
 Scala est le langage de programmation utilisé pour développer l'univers \textit{Mamba
   Nation}.\\
 Le moteur 3D du jeu est codé en Scala, les mécaniques de gameplay sont codés en
-Scala, l'outil d'infrastructure coté serveur est aussi codé en Scala.
+Scala,\\
+l'outil d'infrastructure coté serveur est aussi codé en Scala.
 
-C'est un langage de programmation multi-paradigme conçu à l'École polytechnique
-fédérale de Lausanne (EPFL).
+C'est un langage de programmation multi-paradigme conçu à l'École Polytechnique
+Fédérale de Lausanne (EPFL).
 Son nom vient de l'anglais Scalable language qui signifie  ``langage évolutif''
 . 
 
@@ -42,7 +43,7 @@ Son nom vient de l'anglais Scalable language qui signifie  ``langage évolutif''
   trouvent être implémentées dans des bibliothèques.\\
   C'est un point important pour l'évolutivité du langage.\\
 
-  Un exemple : les collections standards scala sont faciles à utiliser, concises
+  Un exemple : les collections standards Scala sont faciles à utiliser, concises
   et semblent faire partie du langage même si elles sont en fait implémentées
   dans une bibliothèque.\\
   Quelques lignes suffisent pour partitionner une liste \textit{people} en deux
@@ -74,7 +75,7 @@ faciles d'utilisation, concises et extensibles.\\
   Les exceptions à ces règles de Java ont été supprimées :\\
   Plus de primitives comme int, float (Int et Float à la place).\\
   Plus de qualificateur ``static'' mais un mot clef ``object'' qui équivaut à créer
-  automatiquement un singleton thread safe en scala. \\
+  automatiquement un singleton thread safe en Scala. \\
   Ces quelques changements contribuent à rendre le langage plus extensible
   que Java.\\
 \item[\textbullet]\textbf{Fonctionnel :}\\ 
@@ -150,7 +151,7 @@ La complémentarité des paradigmes fonctionnel et orienté objet :\\\\
   entreprise, peu ont fait le pas.\\
   Toutefois, quelques entreprises bien connus utilisent aujourd'hui Scala.
   C'est le cas de Twitter, LinkedIn et Foursquare qui ont incorporés Scala au
-  coeur de leurs projets.\\
+  cœur de leurs projets.\\
   Par exemple Twitter a transféré tout leur code coté serveur de Ruby en Scala,
   afin d'avoir les meilleurs performances possibles tout en gardant un langage
   extensible pouvant faire face à l'évolution croissante de leurs demandes.\\
@@ -160,7 +161,7 @@ La complémentarité des paradigmes fonctionnel et orienté objet :\\\\
   \href{http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html}{tiobe.com}.\\
 \item[\textbullet] Les plugins IDE Scala progressent lentement et restent
   faibles en fonctionnalités comparés à ce qu'offrent les IDE Java.\\
-\item[\textbullet] Le compilateur du langage, scalac, est lent
+\item[\textbullet] Le compilateur du langage, Scalac, est lent
   (approximativement 10 fois plus lent que javac pour un nombre de lignes de
   code équivalent)\\
 \end{itemize}
@@ -195,7 +196,7 @@ En production, les applications Play! s'exécutent grâce au serveur web intégr
 
 \subsection{Choix libre de la technologie coté client}
 
-Le framework Play! ne s'occuppe que de la partie coté serveur.
+Le framework Play! ne s’occupe que de la partie coté serveur.
 Coté client, nous avons le choix des technologies (HTML5 + CSS3 + jQuery
 par exemple).
 
@@ -231,7 +232,7 @@ Le serveur reçoit une requête, traite la requête puis renvoie une réponse.
 Après envoie de la réponse, le client est oublié.
 
 Dans une architecture stateful, l'historique d'activité du client sur le site
-web va être gardé coté serveur (il est allé sur tel page, puis il a cliqué tel
+web va être conservé coté serveur (il est allé sur tel page, puis il a cliqué tel
 bouton) alors que dans une architecture stateless, cette information n'est pas
 gardée.
 
@@ -415,7 +416,7 @@ d'étapes et de transitions.
 \end{wrapfigure}
 
 Une \textbf{étape} représente l'état courant du workflow pour une issue.
-Chaque étape du workflow est liée à un état. 
+%% Chaque étape du workflow est liée à un état. 
 Lorsqu'une issue est déplacée dans une étape particulière, son champ
 \textit{status} est mis à jour et prend la valeur de l'état lié à l'étape.
 Dans le diagramme ci-contre, les boîtes bleus représentent les étapes/états.
