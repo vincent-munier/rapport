@@ -37,7 +37,6 @@ disponibles, dispositions des boutons et des champs de saisies).
 Une nouvelle branche est ajoutée dans Mercurial pour accueillir l'application web.
 Le développement peut commencer!
 
-
 \section{Le déploiement}
 
 Le déploiement doit être fonctionnel avant de développer l'application.
@@ -52,7 +51,6 @@ Nous devons donc vérifier que le déploiement fonctionne bien de bout en bout.
 
 Pour cela, une application simpliste est créée.
 Elle affiche juste une page web avec du contenu statique.
-
 Il faut maintenant héberger l'application puis automatiser le déploiement en
 programmant des scripts.
 
@@ -79,7 +77,7 @@ tournant sur une instance de type \textit{t1.micro} :
   \begin{center}
     \includegraphics[scale=0.8]{cpu-usage.png} 
   \end{center}
-  \caption{utilisation CPU pour une instance de type micro}
+  \caption{utilisation CPU pour une instance du type micro}
 \end{figure}
 
 Les instances de type micro sont aussi les moins chères de tous les types
@@ -282,6 +280,7 @@ place. L'option -XX:+HeapDumpOnOutOfMemoryError a aussi été rajouté au lancem
 de la JVM pour récupérer à l'avenir une description complète de l'état du tas
 (heap) de la mémoire si une même exception se produisait.
 
+\clearpage
 \subsection{Des types de retour plus riches}
 
 Plusieurs méthodes de haut niveau, directement appelées par le main de l'outil
@@ -315,6 +314,9 @@ l'outil d'infra.
   \includegraphics[width=\textwidth]{commands.png}  
 \end{figure}
 
+\clearpage
+\vspace*{1cm}
+
 \subsection{La page Infras}
 
 La page Infras est un tableau de bord des infrastructures existantes.
@@ -334,6 +336,7 @@ Un icône animé de chargement indique à l'utilisateur de patienter.
   \caption{Chargement des infrastructures}
 \end{figure}
 
+\clearpage
 Une fois les informations des infrastructures chargées, tous les noms d'infra
 sont affichés sous forme de tableau.
 \begin{figure}[H]
@@ -349,6 +352,7 @@ les versions des différents services de l'infrastructure sélectionnée.
   \caption{les versions des services de l'infrastructure qaengine}
 \end{figure}
 
+\clearpage
 Les nœuds appartenant à l'infra sélectionnée sont aussi accessibles via un
 onglet \textit{Nodes}. 
 Ce tableau nous affiche des informations intéressantes pour chaque nœud telles
@@ -361,6 +365,7 @@ l'instance du nœud, et enfin la liste des Security Groups.
   \caption{les nœuds de l'infrastructure qaengine}
 \end{figure}
 
+\bigskip
 L'utilisateur peut cliquer sur le nœud qui l'intéresse.
 Un troisième et dernier tableau se présente à l'utilisateur dans lequel il peut
 consulter les rôles Chef appliqués au nœud sélectionné.
@@ -370,6 +375,7 @@ consulter les rôles Chef appliqués au nœud sélectionné.
   \caption{Les rôles du nœud qaengine\_game2\_0}
 \end{figure}
 
+\clearpage
 \subsection{La page History}
 
 La page History affiche l'historique des commandes exécutées.
@@ -394,6 +400,7 @@ actuellement en cours d'exécution.
   \caption{Historique des 100 dernières commandes exécutées}
 \end{figure}
 
+\clearpage
 \section{Composants de la page commands}
 
 La webapp propose 30 commandes réparties dans 7 catégories différentes.
@@ -840,6 +847,7 @@ administrateurs système de la société. Cependant, ils ne peuvent pas se servi
 de l'outil en ligne de commande pour l'exécuter car elle n'existe que pour
 l'application web.
 
+\clearpage
 \section{Évolutions de l'outil d'infra}
 
 \subsection{Création d'infrastructure}
@@ -1045,6 +1053,7 @@ connaissais pas. Cette page de documentation permet à tout le monde d'y voir
 un peu plus clair sur l'exécution de l'outil d'infra et sert de premier support
 lorsqu'une commande échoue.
 
+\clearpage
 \section{Plugin SBT}
 
 Afin de faciliter le déploiement d'un service, Mimesis Republic a mis en place
@@ -1090,6 +1099,7 @@ Une fois l'archive dézippée, le dossier \textit{infra-admin-web} contient bien
 les dossiers conf, app et scripts avec le script service.sh pour piloter le
 serveur web de l'application.
 
+\bigskip
 \underline{\textit{Bilan}} : Le modèle de déploiement uniforme est une très
 bonne idée. Le démarrage ou l'arrêt d'une application quelconque peut alors être
  automatisé par un outil externe. 
